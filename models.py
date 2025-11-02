@@ -8,7 +8,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(10), default="user")
 
     borrows = db.relationship('Borrow', backref='user', lazy=True)
@@ -59,7 +59,9 @@ class Book(db.Model):
             "title": self.title,
             "isbn": self.isbn,
             "author": self.author.name if self.author else None,
+            "author_id": self.author_id,
             "category": self.category.name if self.category else None,
+            "category_id": self.category_id,
             "available_copies": self.available_copies
         }
 
@@ -78,12 +80,14 @@ class Borrow(db.Model):
         return {
             "id": self.id,
             "user": self.user.name,
+            "user_email": self.user.email,
+            "user_id": self.user_id,
             "book": self.book.title,
+            "book_id": self.book_id,
             "borrow_date": self.borrow_date.strftime("%Y-%m-%d %H:%M:%S"),
             "due_date": self.due_date.strftime("%Y-%m-%d %H:%M:%S"),
             "return_date": self.return_date.strftime("%Y-%m-%d %H:%M:%S") if self.return_date else None
         }
-
 
 class Fine(db.Model):
     id = db.Column(db.Integer, primary_key=True)

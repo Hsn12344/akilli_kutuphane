@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
-from models import db, Book, Author
+from models import db, Book, Author, Category
 from functools import wraps
 
 book_bp = Blueprint('book_bp', __name__)
 
+# Admin kontrol decorator
 def admin_required(fn):
     @wraps(fn)
     @jwt_required()
@@ -19,6 +20,22 @@ def admin_required(fn):
 @book_bp.route('/books', methods=['GET'])
 def get_books():
     books = Book.query.all()
+    return jsonify([b.to_dict() for b in books]), 200
+
+# Kitap arama (başlık ve kategoriye göre)
+@book_bp.route('/books/search', methods=['GET'])
+def search_books():
+    title = request.args.get('title', '', type=str)
+    category = request.args.get('category', '', type=str)
+
+    query = Book.query
+
+    if title:
+        query = query.filter(Book.title.ilike(f"%{title}%"))  # Başlığa göre arama
+    if category:
+        query = query.join(Book.category).filter(Category.name.ilike(f"%{category}%"))  # Kategoriye göre arama
+
+    books = query.all()
     return jsonify([b.to_dict() for b in books]), 200
 
 # Kitap ekleme (admin)
@@ -42,8 +59,13 @@ def add_book():
         db.session.add(author)
         db.session.commit()
 
-    book = Book(title=title, isbn=isbn, author_id=author.id,
-                category_id=category_id, available_copies=available_copies)
+    book = Book(
+        title=title,
+        isbn=isbn,
+        author_id=author.id,
+        category_id=category_id,
+        available_copies=available_copies
+    )
 
     db.session.add(book)
     db.session.commit()
