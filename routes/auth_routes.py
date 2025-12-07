@@ -1,62 +1,50 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token
-from models import db, User
-from utils.mail_service import send_welcome_email
+from services.auth_service import register_user, login_user, create_admin_direct
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
-    name = data.get("name")
-    email = data.get("email")
-    password = data.get("password")
-    role = data.get("role", "user")
 
-    if not name or not email or not password:
-        return jsonify({"message": "Tüm alanlar zorunludur."}), 400
+    user, err = register_user(
+        data.get("name"),
+        data.get("email"),
+        data.get("password"),
+        data.get("role", "user")
+    )
 
-    if User.query.filter_by(email=email).first():
-        return jsonify({"message": "Bu e-posta zaten kayıtlı."}), 400
+    if err:
+        return jsonify({"message": err}), 400
 
-    user = User(name=name, email=email, role=role)
-    user.set_password(password)
-    db.session.add(user)
-    db.session.commit()
-
-    send_welcome_email(email, name)
     return jsonify({"message": "Kullanıcı başarıyla kaydedildi."}), 201
 
 
 @auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
 
-    user = User.query.filter_by(email=email).first()
-    if not user or not user.check_password(password):
-        return jsonify({"message": "E-posta veya şifre hatalı."}), 401
+    token, user, err = login_user(
+        data.get("email"),
+        data.get("password")
+    )
 
-    access_token = create_access_token(identity=user.id, additional_claims={"role": user.role})
-    return jsonify({"access_token": access_token, "role": user.role}), 200
+    if err:
+        return jsonify({"message": err}), 401
+
+    return jsonify({"access_token": token, "role": user.role}), 200
 
 
 @auth_bp.route("/create_admin", methods=["POST"])
 def create_admin():
     data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
 
-    if not email or not password:
-        return jsonify({"message": "E-posta ve şifre zorunludur."}), 400
+    admin, err = create_admin_direct(
+        data.get("email"),
+        data.get("password")
+    )
 
-    if User.query.filter_by(email=email).first():
-        return jsonify({"message": "Bu e-posta zaten kayıtlı."}), 400
-
-    admin = User(name="Admin", email=email, role="admin")
-    admin.set_password(password)
-    db.session.add(admin)
-    db.session.commit()
+    if err:
+        return jsonify({"message": err}), 400
 
     return jsonify({"message": "Admin başarıyla oluşturuldu."}), 201

@@ -1,100 +1,53 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt
-from models import db, Book, Author, Category
-from functools import wraps
+from flask_jwt_extended import jwt_required
+from utils.decorators import admin_required
+from services.book_service import *
 
 book_bp = Blueprint('book_bp', __name__)
 
-# Admin kontrol decorator
-def admin_required(fn):
-    @wraps(fn)
-    @jwt_required()
-    def wrapper(*args, **kwargs):
-        claims = get_jwt()
-        if claims.get("role") != "admin":
-            return jsonify({"message": "Admin yetkisi gerekli."}), 403
-        return fn(*args, **kwargs)
-    return wrapper
-
-# Kitap listeleme
 @book_bp.route('/books', methods=['GET'])
 def get_books():
-    books = Book.query.all()
+    books = list_books()
     return jsonify([b.to_dict() for b in books]), 200
 
-# Kitap arama (başlık ve kategoriye göre)
+
 @book_bp.route('/books/search', methods=['GET'])
-def search_books():
-    title = request.args.get('title', '', type=str)
-    category = request.args.get('category', '', type=str)
-
-    query = Book.query
-
-    if title:
-        query = query.filter(Book.title.ilike(f"%{title}%"))  # Başlığa göre arama
-    if category:
-        query = query.join(Book.category).filter(Category.name.ilike(f"%{category}%"))  # Kategoriye göre arama
-
-    books = query.all()
+def search():
+    title = request.args.get('title', '')
+    category = request.args.get('category', '')
+    books = search_books(title, category)
     return jsonify([b.to_dict() for b in books]), 200
 
-# Kitap ekleme (admin)
+
 @book_bp.route('/books', methods=['POST'])
 @admin_required
 def add_book():
     data = request.get_json()
-    title = data.get("title")
-    isbn = data.get("isbn")
-    author_name = data.get("author_name")
-    category_id = data.get("category_id")
-    available_copies = data.get("available_copies", 1)
-
-    if not all([title, isbn, author_name, category_id]):
-        return jsonify({"message": "Başlık, ISBN, yazar adı ve kategori zorunludur."}), 400
-
-    # Yazar var mı kontrol et, yoksa ekle
-    author = Author.query.filter_by(name=author_name).first()
-    if not author:
-        author = Author(name=author_name)
-        db.session.add(author)
-        db.session.commit()
-
-    book = Book(
-        title=title,
-        isbn=isbn,
-        author_id=author.id,
-        category_id=category_id,
-        available_copies=available_copies
+    book, err = add_book_service(
+        data.get("title"),
+        data.get("isbn"),
+        data.get("author_name"),
+        data.get("category_id"),
+        data.get("available_copies", 1)
     )
-
-    db.session.add(book)
-    db.session.commit()
+    if err:
+        return jsonify({"message": err}), 400
     return jsonify(book.to_dict()), 201
 
-# Kitap güncelleme (admin)
+
 @book_bp.route('/books/<int:book_id>', methods=['PUT'])
 @admin_required
-def update_book(book_id):
-    book = Book.query.get(book_id)
-    if not book:
-        return jsonify({"message": "Kitap bulunamadı."}), 404
-
-    data = request.get_json()
-    book.title = data.get("title", book.title)
-    book.isbn = data.get("isbn", book.isbn)
-    book.author_id = data.get("author_id", book.author_id)
-    book.category_id = data.get("category_id", book.category_id)
-    book.available_copies = data.get("available_copies", book.available_copies)
-    db.session.commit()
+def update(book_id):
+    book, err = update_book_service(book_id, request.get_json())
+    if err:
+        return jsonify({"message": err}), 404
     return jsonify(book.to_dict()), 200
 
-# Kitap silme (admin)
+
 @book_bp.route('/books/<int:book_id>', methods=['DELETE'])
 @admin_required
-def delete_book(book_id):
-    book = Book.query.get(book_id)
-    if not book:
-        return jsonify({"message": "Kitap bulunamadı."}), 404
-    db.session.delete(book)
-    db.session.commit()
+def delete(book_id):
+    ok, err = delete_book_service(book_id)
+    if err:
+        return jsonify({"message": err}), 404
     return jsonify({"message": "Kitap silindi."}), 200

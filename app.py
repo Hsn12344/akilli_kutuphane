@@ -50,7 +50,7 @@ def frontend():
 app.register_blueprint(admin_bp)
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(book_bp)
-app.register_blueprint(borrow_bp)
+app.register_blueprint(borrow_bp, url_prefix="/borrow")
 app.register_blueprint(category_bp)
 
 # -----------------------------
