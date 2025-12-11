@@ -1,0 +1,23 @@
+{% extends "layout_user.html" %}
+
+{% block page_title %}Ödünçlerim{% endblock %}
+
+{% block content %}
+<h5 class="mb-3">Ödünç Aldığın Kitaplar</h5>
+
+<div class="table-responsive card shadow-sm">
+    <table class="table table-striped mb-0" id="borrowedTable">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Kitap</th>
+                <th>Alış Tarihi</th>
+                <th>Teslim Tarihi</th>
+                <th>İade Tarihi</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+{% endblock %}

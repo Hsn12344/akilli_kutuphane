@@ -1,0 +1,28 @@
+{% extends "layout_auth.html" %}
+
+{% block title %}Giriş{% endblock %}
+
+{% block content %}
+<form onsubmit="event.preventDefault(); login();">
+    <div class="mb-3">
+        <label for="loginEmail" class="form-label">Email</label>
+        <input id="loginEmail" type="email" class="form-control" placeholder="ornek@mail.com" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="loginPassword" class="form-label">Şifre</label>
+        <input id="loginPassword" type="password" class="form-control" placeholder="Şifreniz" required>
+    </div>
+
+    <button class="btn btn-primary w-100 mb-2" type="submit">
+        Giriş Yap
+    </button>
+
+    <p id="loginMessage" class="text-danger small text-center"></p>
+
+    <p class="text-center mt-3 small">
+        Hesabın yok mu?
+        <a href="/register">Kayıt Ol</a>
+    </p>
+</form>
+{% endblock %}

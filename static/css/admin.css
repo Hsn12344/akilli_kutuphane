@@ -1,0 +1,12 @@
+/* Admin panel small overrides */
+
+#page-content-wrapper {
+    background-color: #f2f4f8;
+}
+
+#adminBooksTable tbody tr:hover,
+#adminBorrowedTable tbody tr:hover,
+#adminFinesTable tbody tr:hover,
+#categoryTable tbody tr:hover {
+    background-color: rgba(0,0,0,0.02);
+}

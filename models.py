@@ -4,6 +4,9 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
+# ---------------------------------------------------
+# USER
+# ---------------------------------------------------
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -11,7 +14,13 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(10), default="user")
 
-    borrows = db.relationship('Borrow', backref='user', lazy=True)
+    borrows = db.relationship(
+        'Borrow',
+        backref='user',
+        lazy=True,
+        cascade="all, delete",
+        passive_deletes=True
+    )
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -20,38 +29,70 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
     def to_dict(self):
-        return {"id": self.id, "name": self.name, "email": self.email, "role": self.role}
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "role": self.role
+        }
 
 
+# ---------------------------------------------------
+# AUTHOR
+# ---------------------------------------------------
 class Author(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
 
-    books = db.relationship('Book', backref='author', lazy=True)
+    books = db.relationship(
+        'Book',
+        backref='author',
+        lazy=True,
+        cascade="all, delete",
+        passive_deletes=True
+    )
 
     def to_dict(self):
         return {"id": self.id, "name": self.name}
 
 
+# ---------------------------------------------------
+# CATEGORY
+# ---------------------------------------------------
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
 
-    books = db.relationship('Book', backref='category', lazy=True)
+    books = db.relationship(
+        'Book',
+        backref='category',
+        lazy=True,
+        cascade="all, delete",
+        passive_deletes=True
+    )
 
     def to_dict(self):
         return {"id": self.id, "name": self.name}
 
 
+# ---------------------------------------------------
+# BOOK
+# ---------------------------------------------------
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
     isbn = db.Column(db.String(50), unique=True, nullable=False)
-    author_id = db.Column(db.Integer, db.ForeignKey('author.id'), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('author.id', ondelete="CASCADE"), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id', ondelete="CASCADE"), nullable=False)
     available_copies = db.Column(db.Integer, default=1)
 
-    borrows = db.relationship('Borrow', backref='book', lazy=True)
+    borrows = db.relationship(
+        'Borrow',
+        backref='book',
+        lazy=True,
+        cascade="all, delete",
+        passive_deletes=True
+    )
 
     def to_dict(self):
         return {
@@ -66,15 +107,24 @@ class Book(db.Model):
         }
 
 
+# ---------------------------------------------------
+# BORROW
+# ---------------------------------------------------
 class Borrow(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id', ondelete="CASCADE"), nullable=False)
     borrow_date = db.Column(db.DateTime, default=datetime.utcnow)
     due_date = db.Column(db.DateTime)
     return_date = db.Column(db.DateTime, nullable=True)
 
-    fines = db.relationship('Fine', backref='borrow', lazy=True)
+    fines = db.relationship(
+        'Fine',
+        backref='borrow',
+        lazy=True,
+        cascade="all, delete",
+        passive_deletes=True
+    )
 
     def to_dict(self):
         return {
@@ -89,9 +139,13 @@ class Borrow(db.Model):
             "return_date": self.return_date.strftime("%Y-%m-%d %H:%M:%S") if self.return_date else None
         }
 
+
+# ---------------------------------------------------
+# FINE
+# ---------------------------------------------------
 class Fine(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    borrow_id = db.Column(db.Integer, db.ForeignKey('borrow.id'), nullable=False)
+    borrow_id = db.Column(db.Integer, db.ForeignKey('borrow.id', ondelete="CASCADE"), nullable=False)
     amount = db.Column(db.Float, nullable=False)
 
     def to_dict(self):

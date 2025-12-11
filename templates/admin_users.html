@@ -1,0 +1,50 @@
+{% extends "layout_admin.html" %}
+
+{% block page_title %}Kullanıcı İşlemleri{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <!-- Kullanıcıyı Admin Yap -->
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning text-dark">
+                Kullanıcıyı Admin Yap
+            </div>
+            <div class="card-body">
+                <label class="form-label">Kullanıcı Email</label>
+                <input id="adminMakeEmail" type="email" class="form-control form-control-sm mb-2">
+
+                <button class="btn btn-warning btn-sm w-100" onclick="makeAdmin()">
+                    Admin Yap
+                </button>
+
+                <p id="adminMakeMessage" class="small text-muted mt-2"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kullanıcı Listesi -->
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                Sistemdeki Tüm Kullanıcılar
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Ad</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "layout_user.html" %}
+
+{% block page_title %}Genel Bakış{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 stat-card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Toplam Ödünç Aldığın Kitap</h6>
+                <h3 id="statTotalBorrows" class="card-title mb-0">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 stat-card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Aktif Ödünçler</h6>
+                <h3 id="statActiveBorrows" class="card-title mb-0">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 stat-card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Geciken Kitaplar</h6>
+                <h3 id="statLateBorrows" class="card-title mb-0">0</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h5>Hızlı İşlemler</h5>
+    <div class="d-flex flex-wrap gap-2 mt-2">
+        <a href="/user/books" class="btn btn-primary btn-sm">Kitaplara Göz At</a>
+        <a href="/user/borrows" class="btn btn-outline-primary btn-sm">Ödünçlerimi Görüntüle</a>
+    </div>
+</div>
+{% endblock %}

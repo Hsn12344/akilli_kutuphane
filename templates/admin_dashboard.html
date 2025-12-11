@@ -1,0 +1,40 @@
+{% extends "layout_admin.html" %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 stat-card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Toplam Kitap</h6>
+                <h3 id="adminStatBooks" class="card-title mb-0">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 stat-card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Kategori Sayısı</h6>
+                <h3 id="adminStatCategories" class="card-title mb-0">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 stat-card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Aktif Ödünçler</h6>
+                <h3 id="adminStatBorrows" class="card-title mb-0">0</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 stat-card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Toplam Ceza (TL)</h6>
+                <h3 id="adminStatFines" class="card-title mb-0">0</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

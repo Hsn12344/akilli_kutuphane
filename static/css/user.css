@@ -1,0 +1,10 @@
+/* User-specific small tweaks */
+
+#page-content-wrapper {
+    background-color: #f5f7fb;
+}
+
+#booksTable tbody tr:hover,
+#borrowedTable tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}

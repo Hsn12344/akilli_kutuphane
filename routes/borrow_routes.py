@@ -9,7 +9,10 @@ from services.borrow_service import (
 
 borrow_bp = Blueprint('borrow_bp', __name__)
 
-# ✅ POST /borrow
+
+# -----------------------------------------
+# POST /borrow
+# -----------------------------------------
 @borrow_bp.route('/', methods=['POST'])
 @jwt_required()
 def borrow_book():
@@ -23,7 +26,9 @@ def borrow_book():
     return jsonify(borrow.to_dict()), 201
 
 
-# ✅ POST /borrow/return/<id>
+# -----------------------------------------
+# POST /borrow/return/<id>
+# -----------------------------------------
 @borrow_bp.route('/return/<int:borrow_id>', methods=['POST'])
 @jwt_required()
 def return_book(borrow_id):
@@ -36,24 +41,30 @@ def return_book(borrow_id):
     return jsonify(borrow.to_dict()), 200
 
 
-# ✅ GET /borrow/borrows
+# -----------------------------------------
+# GET /borrow/borrows
+# -----------------------------------------
 @borrow_bp.route('/borrows', methods=['GET'])
 @jwt_required()
 def get_borrows():
     user_id = get_jwt_identity()
     claims = get_jwt()
+    role = claims.get("role")
 
-    borrows = list_borrows(user_id, claims.get("role"))
+    borrows = list_borrows(user_id, role)
     return jsonify([b.to_dict() for b in borrows]), 200
 
 
-# ✅ GET /borrow/fines
+# -----------------------------------------
+# GET /borrow/fines
+# -----------------------------------------
 @borrow_bp.route('/fines', methods=['GET'])
 @jwt_required()
 def get_fines():
     claims = get_jwt()
-    fines = list_fines(claims.get("role"))
+    role = claims.get("role")
 
+    fines = list_fines(role)
     if fines is None:
         return jsonify({"message": "Admin yetkisi gerekli."}), 403
 

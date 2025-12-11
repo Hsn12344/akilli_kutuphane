@@ -1,0 +1,36 @@
+{% extends "layout_admin.html" %}
+
+{% block page_title %}Kategori Yönetimi{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header">Yeni Kategori</div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <label class="form-label">Kategori Adı</label>
+                    <input id="adminCategoryName" class="form-control form-control-sm" type="text">
+                </div>
+                <button class="btn btn-primary btn-sm w-100" onclick="addCategory()">
+                    Ekle
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="table-responsive card shadow-sm">
+            <table class="table table-striped mb-0" id="categoryTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Adı</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

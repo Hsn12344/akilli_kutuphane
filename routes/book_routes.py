@@ -1,17 +1,18 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
 from utils.decorators import admin_required
 from services.book_service import *
 
 book_bp = Blueprint('book_bp', __name__)
 
-@book_bp.route('/books', methods=['GET'])
+# GET /books → KİTAP LİSTELE
+@book_bp.route('/', methods=['GET'])
 def get_books():
     books = list_books()
     return jsonify([b.to_dict() for b in books]), 200
 
 
-@book_bp.route('/books/search', methods=['GET'])
+# GET /books/search → ARAMA
+@book_bp.route('/search', methods=['GET'])
 def search():
     title = request.args.get('title', '')
     category = request.args.get('category', '')
@@ -19,7 +20,8 @@ def search():
     return jsonify([b.to_dict() for b in books]), 200
 
 
-@book_bp.route('/books', methods=['POST'])
+# POST /books → KİTAP EKLE
+@book_bp.route('/', methods=['POST'])
 @admin_required
 def add_book():
     data = request.get_json()
@@ -35,7 +37,8 @@ def add_book():
     return jsonify(book.to_dict()), 201
 
 
-@book_bp.route('/books/<int:book_id>', methods=['PUT'])
+# PUT /books/<id> → GÜNCELLE
+@book_bp.route('/<int:book_id>', methods=['PUT'])
 @admin_required
 def update(book_id):
     book, err = update_book_service(book_id, request.get_json())
@@ -44,7 +47,8 @@ def update(book_id):
     return jsonify(book.to_dict()), 200
 
 
-@book_bp.route('/books/<int:book_id>', methods=['DELETE'])
+# DELETE /books/<id> → SİL
+@book_bp.route('/<int:book_id>', methods=['DELETE'])
 @admin_required
 def delete(book_id):
     ok, err = delete_book_service(book_id)

@@ -1,0 +1,17 @@
+.auth-body {
+    min-height: 100vh;
+}
+
+.auth-wrapper {
+    min-height: 100vh;
+}
+
+.auth-card {
+    max-width: 420px;
+    width: 100%;
+    border-radius: 1.25rem;
+}
+
+.auth-card h1 {
+    letter-spacing: 0.03em;
+}

@@ -1,5 +1,6 @@
 from models import db, User
 
+
 def make_user_admin(email):
     if not email:
         return None, "Email zorunludur."
@@ -22,6 +23,13 @@ def create_admin_user(name, email, password):
 
     user = User(name=name, email=email, role="admin")
     user.set_password(password)
+
     db.session.add(user)
     db.session.commit()
+
     return user, None
+
+
+def list_all_users():
+    users = User.query.all()
+    return [u.to_dict() for u in users]  # JSON uyumlu dict listesi

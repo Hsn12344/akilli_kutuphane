@@ -1,0 +1,68 @@
+{% extends "layout_admin.html" %}
+
+{% block page_title %}Kitap Yönetimi{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                Yeni Kitap Ekle
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <label class="form-label">Başlık</label>
+                    <input id="adminBookTitle" class="form-control form-control-sm" type="text">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">ISBN</label>
+                    <input id="adminBookISBN" class="form-control form-control-sm" type="text">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Yazar</label>
+                    <input id="adminBookAuthor" class="form-control form-control-sm" type="text">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Kategori ID</label>
+                    <input id="adminBookCategory" class="form-control form-control-sm" type="number">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Mevcut Adet</label>
+                    <input id="adminBookCopies" class="form-control form-control-sm" type="number" value="1">
+                </div>
+                <button class="btn btn-primary btn-sm w-100" onclick="addBook()">
+                    Kaydet
+                </button>
+                <p id="adminBookMessage" class="small text-muted mt-2"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5>Kitap Listesi</h5>
+            <input type="text"
+                   class="form-control form-control-sm w-50"
+                   placeholder="Kitap ara..."
+                   id="adminBookSearch"
+                   oninput="fetchBooksAdmin(this.value)">
+        </div>
+
+        <div class="table-responsive card shadow-sm">
+            <table class="table table-hover mb-0" id="adminBooksTable">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Başlık</th>
+                        <th>Yazar</th>
+                        <th>Kategori</th>
+                        <th>Mevcut</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
