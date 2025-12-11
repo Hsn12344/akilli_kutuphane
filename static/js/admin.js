@@ -238,7 +238,7 @@ async function makeAdmin() {
     const msgEl = document.getElementById("adminMakeMessage");
 
     try {
-        const res = await fetch(`${API_URL}/admin/make-admin`, {
+        const res = await fetch(`${API_URL}/api/admin/make-admin`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
