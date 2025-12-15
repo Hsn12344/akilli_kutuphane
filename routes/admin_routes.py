@@ -8,11 +8,6 @@ from services.admin_service import list_all_users, make_user_admin, create_admin
 
 admin_bp = Blueprint('admin_bp', __name__)
 
-
-# ------------------------------
-# Mevcut kullanıcıyı admin yapma
-# POST /admin/make-admin
-# ------------------------------
 @admin_bp.route('/make-admin', methods=['POST'])
 @admin_required
 def make_admin():
@@ -26,10 +21,8 @@ def make_admin():
     if err:
         return jsonify({"message": err}), 400
 
-    # 🔐 Admin ID (işlemi yapan)
     admin_id = get_jwt_identity()
 
-    # 📝 LOG KAYDI
     log_admin_action(
         admin_id=admin_id,
         action="KULLANICIYI ADMIN YAPTI",
@@ -40,12 +33,6 @@ def make_admin():
         "message": f"{user.email} artık admin."
     }), 200
 
-
-
-# ------------------------------
-# Yeni admin oluşturma
-# POST /admin/create-admin
-# ------------------------------
 @admin_bp.route('/create-admin', methods=['POST'])
 @admin_required
 def create_admin():
@@ -64,11 +51,6 @@ def create_admin():
 
     return jsonify({"message": f"{user.name} admin olarak oluşturuldu."}), 201
 
-
-# ------------------------------
-# Kullanıcıları listeleme
-# GET /admin/users
-# ------------------------------
 @admin_bp.route('/users', methods=['GET'])
 @admin_required
 def get_users():
