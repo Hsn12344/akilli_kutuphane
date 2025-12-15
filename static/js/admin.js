@@ -320,8 +320,7 @@ async function adminReturnBook(borrowId) {
 // CEZALAR
 async function fetchFines() {
     const token = getToken();
-    const role = getRole();
-    if (!token || role !== "admin") return;
+    if (!token) return;
 
     try {
         const res = await fetch(`${API_URL}/borrow/fines`, {
@@ -333,17 +332,25 @@ async function fetchFines() {
         if (!tbody) return;
 
         tbody.innerHTML = "";
+
         fines.forEach(f => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td>${f.id}</td>
+                <td>${f.user_name || "-"}</td>
                 <td>${f.borrow_id}</td>
-                <td>${f.amount.toFixed ? f.amount.toFixed(2) : f.amount}</td>
+                <td>${f.amount.toFixed(2)} TL</td>
+                <td>
+                    ${f.is_paid
+                        ? '<span class="badge bg-success">Ödendi</span>'
+                        : '<span class="badge bg-danger">Ödenmedi</span>'}
+                </td>
             `;
             tbody.appendChild(tr);
         });
+
     } catch (err) {
-        console.error(err);
+        console.error("Cezalar alınamadı:", err);
     }
 }
 

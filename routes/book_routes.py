@@ -37,7 +37,6 @@ def add_book():
     return jsonify(book.to_dict()), 201
 
 
-# PUT /books/<id> → GÜNCELLE
 @book_bp.route('/<int:book_id>', methods=['PUT'])
 @admin_required
 def update(book_id):
@@ -47,7 +46,6 @@ def update(book_id):
     return jsonify(book.to_dict()), 200
 
 
-# DELETE /books/<id> → SİL
 @book_bp.route('/<int:book_id>', methods=['DELETE'])
 @admin_required
 def delete(book_id):

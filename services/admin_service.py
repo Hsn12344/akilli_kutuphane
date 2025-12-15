@@ -32,4 +32,4 @@ def create_admin_user(name, email, password):
 
 def list_all_users():
     users = User.query.all()
-    return [u.to_dict() for u in users]  # JSON uyumlu dict listesi
+    return [u.to_dict() for u in users]

@@ -9,14 +9,11 @@ from services.category_service import (
 
 category_bp = Blueprint('category_bp', __name__)
 
-# GET /categories → Kategori listele
 @category_bp.route('/', methods=['GET'])
 def get_categories():
     categories = list_categories()
     return jsonify([c.to_dict() for c in categories]), 200
 
-
-# POST /categories → Yeni kategori ekle
 @category_bp.route('/', methods=['POST'])
 @admin_required
 def add_category():
@@ -28,8 +25,6 @@ def add_category():
 
     return jsonify(category.to_dict()), 201
 
-
-# PUT /categories/<id> → Güncelle
 @category_bp.route('/<int:category_id>', methods=['PUT'])
 @admin_required
 def update_category(category_id):
@@ -41,8 +36,6 @@ def update_category(category_id):
 
     return jsonify(category.to_dict()), 200
 
-
-# DELETE /categories/<id> → Sil
 @category_bp.route('/<int:category_id>', methods=['DELETE'])
 @admin_required
 def delete_category(category_id):

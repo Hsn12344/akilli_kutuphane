@@ -4,9 +4,6 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
-# ---------------------------------------------------
-# USER
-# ---------------------------------------------------
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -36,10 +33,6 @@ class User(db.Model):
             "role": self.role
         }
 
-
-# ---------------------------------------------------
-# AUTHOR
-# ---------------------------------------------------
 class Author(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
@@ -55,10 +48,6 @@ class Author(db.Model):
     def to_dict(self):
         return {"id": self.id, "name": self.name}
 
-
-# ---------------------------------------------------
-# CATEGORY
-# ---------------------------------------------------
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
@@ -74,10 +63,6 @@ class Category(db.Model):
     def to_dict(self):
         return {"id": self.id, "name": self.name}
 
-
-# ---------------------------------------------------
-# BOOK
-# ---------------------------------------------------
 class Book(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
@@ -106,10 +91,6 @@ class Book(db.Model):
             "available_copies": self.available_copies
         }
 
-
-# ---------------------------------------------------
-# BORROW
-# ---------------------------------------------------
 class Borrow(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
@@ -139,14 +120,48 @@ class Borrow(db.Model):
             "return_date": self.return_date.strftime("%Y-%m-%d %H:%M:%S") if self.return_date else None
         }
 
-
-# ---------------------------------------------------
-# FINE
-# ---------------------------------------------------
 class Fine(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    borrow_id = db.Column(db.Integer, db.ForeignKey('borrow.id', ondelete="CASCADE"), nullable=False)
+    borrow_id = db.Column(
+        db.Integer,
+        db.ForeignKey('borrow.id', ondelete="CASCADE"),
+        nullable=False
+    )
     amount = db.Column(db.Float, nullable=False)
+    is_paid = db.Column(db.Boolean, default=False)
+    paid_at = db.Column(db.DateTime, nullable=True)
 
     def to_dict(self):
-        return {"id": self.id, "borrow_id": self.borrow_id, "amount": self.amount}
+        return {
+            "id": self.id,
+            "borrow_id": self.borrow_id,
+            "amount": self.amount,
+            "is_paid": self.is_paid,
+            "paid_at": self.paid_at.strftime("%Y-%m-%d %H:%M:%S") if self.paid_at else None,
+
+            # KULLANICI BİLGİSİ
+            "user_name": self.borrow.user.name if self.borrow and self.borrow.user else None,
+            "user_email": self.borrow.user.email if self.borrow and self.borrow.user else None
+        }
+
+class AdminLog(db.Model):
+    __tablename__ = "admin_log"
+
+    id = db.Column(db.Integer, primary_key=True)
+    admin_id = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="SET NULL"))
+    action = db.Column(db.String(255))
+    target = db.Column(db.String(255))
+    ip_address = db.Column(db.String(45))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    admin = db.relationship("User", backref="admin_logs")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "admin": self.admin.name if self.admin else "Silinmiş Admin",
+            "action": self.action,
+            "target": self.target,
+            "ip_address": self.ip_address,
+            "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S")
+        }

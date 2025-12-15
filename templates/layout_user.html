@@ -14,29 +14,43 @@
 <body>
 
 <div class="d-flex" id="wrapper">
-    <!-- Sidebar -->
+
+    <!-- ================= SIDEBAR ================= -->
     <nav id="sidebar" class="sidebar bg-dark text-white">
         <div class="sidebar-header px-3 py-3">
             <h4 class="mb-0">📚 Kütüphane</h4>
             <small class="text-muted">Kullanıcı Paneli</small>
         </div>
+
         <ul class="nav flex-column px-2">
+
             <li class="nav-item">
                 <a href="/user" class="nav-link sidebar-link">
                     🏠 Genel Bakış
                 </a>
             </li>
+
             <li class="nav-item">
                 <a href="/user/books" class="nav-link sidebar-link">
                     📘 Kitaplar
                 </a>
             </li>
+
             <li class="nav-item">
                 <a href="/user/borrows" class="nav-link sidebar-link">
                     📦 Ödünçlerim
                 </a>
             </li>
+
+            <!-- ✅ CEZALARIM MENÜSÜ EKLENDİ -->
+            <li class="nav-item">
+                <a href="/user/fines" class="nav-link sidebar-link">
+                    ⚠️ Cezalarım
+                </a>
+            </li>
+
         </ul>
+
         <div class="mt-auto px-3 pb-3">
             <button class="btn btn-outline-light w-100 btn-sm" onclick="logout()">
                 Çıkış Yap
@@ -44,26 +58,30 @@
         </div>
     </nav>
 
-    <!-- Page Content -->
+    <!-- ================= PAGE CONTENT ================= -->
     <div id="page-content-wrapper" class="flex-grow-1">
+
         <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-3">
-            <button class="btn btn-outline-secondary btn-sm me-2" id="menu-toggle">
-                ☰
-            </button>
+            <button class="btn btn-outline-secondary btn-sm me-2" id="menu-toggle">☰</button>
+
             <span class="navbar-brand mb-0 h6">
                 {% block page_title %}Kullanıcı Paneli{% endblock %}
             </span>
+
             <div class="ms-auto small text-muted" id="userEmailDisplay"></div>
         </nav>
 
         <main class="container-fluid py-4">
             {% block content %}{% endblock %}
         </main>
+
     </div>
 </div>
 
+<!-- JS -->
 <script src="{{ url_for('static', filename='libs/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
 <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+
 </body>
 </html>

@@ -26,8 +26,6 @@ def send_email(subject, recipients, body):
         print("E-posta gönderilemedi:", e)
         return False
 
-
-# ✅ 1️⃣ KULLANICI KAYIT MAİLİ
 def send_welcome_email(user_email, user_name):
     subject = "Kütüphaneye Hoş Geldiniz!"
     body = f"""
@@ -40,8 +38,6 @@ Artık kitap ödünç alabilir ve tüm işlemlerinizi sistem üzerinden yöneteb
 """
     send_email(subject, [user_email], body)
 
-
-# ✅ 2️⃣ TESLİM TARİHİ HATIRLATMA MAİLİ
 def send_due_reminder(user_email, book_title, due_date):
     subject = "📅 Kitap Teslim Hatırlatması"
     body = f"""
@@ -54,8 +50,6 @@ Lütfen gecikme yaşamamak için kitabınızı zamanında iade ediniz.
 """
     send_email(subject, [user_email], body)
 
-
-# ✅ 3️⃣ GECİKME CEZASI MAİLİ (10 TL / GÜN)
 def send_late_fine_email(user_email, book_title, delay_days, fine_amount):
     subject = "⏰ Geç İade Cezası Bildirimi"
     body = f"""

@@ -2,6 +2,7 @@ window.addEventListener("DOMContentLoaded", () => {
     if (!requireAuth(["user", "admin"])) return;
 
     const path = window.location.pathname;
+
     if (path === "/user" || path === "/user/") {
         loadUserDashboard();
     } else if (path === "/user/books") {
@@ -11,6 +12,10 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+
+// --------------------------------------------
+// DASHBOARD
+// --------------------------------------------
 async function loadUserDashboard() {
     const token = getToken();
     if (!token) return;
@@ -34,19 +39,19 @@ async function loadUserDashboard() {
             }
         });
 
-        const totalEl = document.getElementById("statTotalBorrows");
-        const activeEl = document.getElementById("statActiveBorrows");
-        const lateEl = document.getElementById("statLateBorrows");
+        document.getElementById("statTotalBorrows").textContent = total;
+        document.getElementById("statActiveBorrows").textContent = active;
+        document.getElementById("statLateBorrows").textContent = late;
 
-        if (totalEl) totalEl.textContent = total;
-        if (activeEl) activeEl.textContent = active;
-        if (lateEl) lateEl.textContent = late;
     } catch (err) {
         console.error(err);
     }
 }
 
-// Kitap listele (user)
+
+// ---------------------------------------------------
+// KİTAPLARI GETİR
+// ---------------------------------------------------
 async function fetchBooks(search = "") {
     try {
         let url = `${API_URL}/books`;
@@ -59,17 +64,21 @@ async function fetchBooks(search = "") {
 
         const tbody = document.querySelector("#booksTable tbody");
         const msgEl = document.getElementById("booksMessage");
+
         if (!tbody) return;
 
         tbody.innerHTML = "";
+
         if (!Array.isArray(books) || books.length === 0) {
             if (msgEl) msgEl.textContent = "Hiç kitap bulunamadı.";
             return;
         }
+
         if (msgEl) msgEl.textContent = "";
 
         books.forEach(book => {
             const tr = document.createElement("tr");
+
             tr.innerHTML = `
                 <td>${book.id}</td>
                 <td>${book.title}</td>
@@ -82,14 +91,19 @@ async function fetchBooks(search = "") {
                         : '<span class="badge bg-secondary">Stokta Yok</span>'}
                 </td>
             `;
+
             tbody.appendChild(tr);
         });
+
     } catch (err) {
         console.error(err);
     }
 }
 
-// Ödünç al (user)
+
+// ---------------------------------------------------
+// ÖDÜNÇ AL
+// ---------------------------------------------------
 async function borrowBook(bookId) {
     const token = getToken();
     if (!token) {
@@ -112,13 +126,17 @@ async function borrowBook(bookId) {
 
         fetchBooks();
         fetchBorrowed();
+
     } catch (err) {
         console.error(err);
         alert("Bir hata oluştu.");
     }
 }
 
-// Ödünç listeleme (user)
+
+// ---------------------------------------------------
+// ÖDÜNÇLERİ GETİR
+// ---------------------------------------------------
 async function fetchBorrowed() {
     const token = getToken();
     if (!token) return;
@@ -130,11 +148,14 @@ async function fetchBorrowed() {
 
         const borrows = await res.json();
         const tbody = document.querySelector("#borrowedTable tbody");
+
         if (!tbody) return;
 
         tbody.innerHTML = "";
+
         borrows.forEach(b => {
             const tr = document.createElement("tr");
+
             tr.innerHTML = `
                 <td>${b.id}</td>
                 <td>${b.book}</td>
@@ -147,14 +168,19 @@ async function fetchBorrowed() {
                         : ''}
                 </td>
             `;
+
             tbody.appendChild(tr);
         });
+
     } catch (err) {
         console.error(err);
     }
 }
 
-// İade et (user)
+
+// ---------------------------------------------------
+// İADE ET
+// ---------------------------------------------------
 async function returnBook(borrowId) {
     const token = getToken();
     if (!token) {
@@ -173,7 +199,9 @@ async function returnBook(borrowId) {
 
         fetchBooks();
         fetchBorrowed();
+
     } catch (err) {
         console.error(err);
     }
 }
+
