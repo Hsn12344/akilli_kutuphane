@@ -164,8 +164,11 @@ async function fetchBorrowed() {
                 <td>${b.return_date || '-'}</td>
                 <td>
                     ${!b.return_date
-                        ? `<button class="btn btn-sm btn-outline-success" onclick="returnBook(${b.id})">İade Et</button>`
-                        : ''}
+                        ? `<button class="btn btn-sm btn-outline-success" onclick="returnBook(${b.id})">
+                        İade Et
+                    </button>`
+                : `<span class="badge bg-success">İade Edildi</span>`
+                    }
                 </td>
             `;
 
