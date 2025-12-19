@@ -10,9 +10,9 @@ from services.borrow_service import (
     update_daily_fines
 )
 
-borrow_bp = Blueprint('borrow_bp', __name__)
+borrow_bp = Blueprint("borrow_bp", __name__)
 
-@borrow_bp.route('/', methods=['POST'])
+@borrow_bp.route("/", methods=["POST"])
 @jwt_required()
 def borrow_book():
     user_id = get_jwt_identity()
@@ -24,7 +24,7 @@ def borrow_book():
 
     return jsonify(borrow.to_dict()), 201
 
-@borrow_bp.route('/return/<int:borrow_id>', methods=['POST'])
+@borrow_bp.route("/return/<int:borrow_id>", methods=["POST"])
 @jwt_required()
 def return_book(borrow_id):
     user_id = get_jwt_identity()
@@ -35,7 +35,7 @@ def return_book(borrow_id):
 
     return jsonify(borrow.to_dict()), 200
 
-@borrow_bp.route('/borrows', methods=['GET'])
+@borrow_bp.route("/borrows", methods=["GET"])
 @jwt_required()
 def get_borrows():
     update_daily_fines()
@@ -46,7 +46,7 @@ def get_borrows():
     borrows = list_borrows(user_id, role)
     return jsonify([b.to_dict() for b in borrows]), 200
 
-@borrow_bp.route('/fines', methods=['GET'])
+@borrow_bp.route("/fines", methods=["GET"])
 @jwt_required()
 def get_fines():
     update_daily_fines()
@@ -59,17 +59,15 @@ def get_fines():
 
     return jsonify([f.to_dict() for f in fines]), 200
 
-@borrow_bp.route('/my-fines', methods=['GET'])
+@borrow_bp.route("/my-fines", methods=["GET"])
 @jwt_required()
 def get_my_fines():
-    update_daily_fines()
-
     user_id = get_jwt_identity()
     fines = list_user_fines(user_id)
 
     return jsonify([f.to_dict() for f in fines]), 200
 
-@borrow_bp.route('/pay-fine/<int:fine_id>', methods=['POST'])
+@borrow_bp.route("/pay-fine/<int:fine_id>", methods=["POST"])
 @jwt_required()
 def pay_fine(fine_id):
     user_id = get_jwt_identity()

@@ -2,7 +2,7 @@ from models import db, Borrow, Book, Fine
 from datetime import datetime, timedelta
 from utils.mail_service import send_due_reminder
 
-DAILY_FINE = 10.0  # Günlük ceza (TL)
+DAILY_FINE = 10.0
 
 def borrow_book_service(user_id, book_id):
     book = Book.query.get(book_id)
@@ -57,7 +57,6 @@ def return_book_service(user_id, borrow_id):
 
     borrow.return_date = datetime.utcnow()
 
-    # ❗ CEZA EKLENMEZ
     update_daily_fines()
 
     borrow.book.available_copies += 1
@@ -81,6 +80,8 @@ def list_fines(role):
     return Fine.query.all()
 
 def list_user_fines(user_id):
+    update_daily_fines()
+
     return (
         Fine.query
         .join(Borrow)
@@ -91,24 +92,21 @@ def list_user_fines(user_id):
         .all()
     )
 
-from datetime import datetime
-
 def pay_fine_service(user_id, fine_id):
     fine = Fine.query.get(fine_id)
+
     if not fine:
         return False, "Ceza bulunamadı."
-
     if fine.borrow.user_id != user_id:
         return False, "Bu ceza size ait değil."
-
     if fine.is_paid:
         return False, "Bu ceza zaten ödenmiş."
 
     fine.is_paid = True
     fine.paid_at = datetime.utcnow()
-
     db.session.commit()
-    return True, None
+
+    return True, "Ceza başarıyla ödendi."
 
 def update_daily_fines():
     today = datetime.utcnow().date()
@@ -126,10 +124,9 @@ def update_daily_fines():
                 fine = Fine.query.filter_by(borrow_id=borrow.id).first()
 
             if fine:
-                if fine.amount != expected_amount:
-                    fine.amount = expected_amount
-                    fine.is_paid = False
-                    fine.paid_at = None
+                fine.amount = expected_amount
+                fine.is_paid = False
+                fine.paid_at = None
             else:
                 fine = Fine(
                     borrow_id=borrow.id,
