@@ -74,16 +74,26 @@ Genişletilebilirliği sağlar
 
 🛠️ Kullanılan Teknolojiler
 
-Katman	      Teknoloji
-Backend	      Python, Flask
-ORM	          SQLAlchemy
-Auth	        JWT (flask-jwt-extended)
-Database	    MySQL
-Migration	    Flask-Migrate
-Mail	        Flask-Mail
-Frontend	    Jinja2, Bootstrap 5, JavaScript
-Security	    Role-based access control
-Architecture	Layered Architecture
+Katman	      ->  Teknoloji
+
+Backend	      ->  Python, Flask
+
+ORM	          ->  SQLAlchemy
+
+Auth	        ->  JWT (flask-jwt-extended)
+
+Database	    ->  MySQL
+
+Migration	    ->  Flask-Migrate
+
+Mail	        ->  Flask-Mail
+
+Frontend	    ->  Jinja2, Bootstrap 5, JavaScript
+
+Security	    ->  Role-based access control
+
+Architecture  ->  Layered Architecture
+
 
 
 🗄️Veritabanı Modelleri
