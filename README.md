@@ -73,6 +73,7 @@ Genişletilebilirliği sağlar
 
 
 🛠️ Kullanılan Teknolojiler
+
 Katman	Teknoloji
 Backend	Python, Flask
 ORM	SQLAlchemy
