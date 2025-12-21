@@ -54,11 +54,17 @@ Asenkron (thread) mail gönderimi
 Proje katmanlı mimari (Layered Architecture) ile tasarlanmıştır:
 
 routes        → API & page endpoint’leri
+
 services      → İş mantığı (business logic)
+
 repositories  → Veritabanı erişimi
+
 models        → ORM (SQLAlchemy)
+
 utils         → Decorator, mail, error handling
+
 templates     → Jinja2 frontend
+
 static        → JS / CSS / assets
 
 
