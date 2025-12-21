@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
 from services.auth_service import register_user, login_user, create_admin_direct
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from services.auth_service import delete_my_account
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -48,3 +50,14 @@ def create_admin():
         return jsonify({"message": err}), 400
 
     return jsonify({"message": "Admin başarıyla oluşturuldu."}), 201
+
+@auth_bp.route("/delete-account", methods=["DELETE"])
+@jwt_required()
+def delete_account():
+    user_id = get_jwt_identity()
+
+    success, message = delete_my_account(user_id)
+    if not success:
+        return jsonify({"message": message}), 400
+
+    return jsonify({"message": message}), 200

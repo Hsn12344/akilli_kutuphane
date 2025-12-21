@@ -1,0 +1,72 @@
+[
+  {
+    "title": "Nutuk",
+    "isbn": "9789750801494",
+    "author_name": "Mustafa Kemal Atatürk",
+    "category_id": 5,
+    "available_copies": 50
+  },
+  {
+    "title": "Tarihin Başlangıcı",
+    "isbn": "9789750514233",
+    "author_name": "Yuval Noah Harari",
+    "category_id": 5,
+    "available_copies": 38
+  },
+  {
+    "title": "Sapiens: İnsan Türünün Kısa Bir Tarihi",
+    "isbn": "9786055029526",
+    "author_name": "Yuval Noah Harari",
+    "category_id": 5,
+    "available_copies": 45
+  },
+  {
+    "title": "Silahlar, Mikroplar ve Çelik",
+    "isbn": "9786052991444",
+    "author_name": "Jared Diamond",
+    "category_id": 5,
+    "available_copies": 34
+  },
+  {
+    "title": "Osmanlı İmparatorluğu",
+    "isbn": "9789750806123",
+    "author_name": "Halil İnalcık",
+    "category_id": 5,
+    "available_copies": 29
+  },
+  {
+    "title": "İmparatorlukların Çöküşü",
+    "isbn": "9789750508560",
+    "author_name": "Paul Kennedy",
+    "category_id": 5,
+    "available_copies": 41
+  },
+  {
+    "title": "Yakın Tarihin Gerçekleri",
+    "isbn": "9789753521085",
+    "author_name": "İlber Ortaylı",
+    "category_id": 5,
+    "available_copies": 47
+  },
+  {
+    "title": "Tarihin Arka Odası",
+    "isbn": "9786051513180",
+    "author_name": "Murat Bardakçı",
+    "category_id": 5,
+    "available_copies": 26
+  },
+  {
+    "title": "Avrupa Tarihi",
+    "isbn": "9789750506511",
+    "author_name": "Norman Davies",
+    "category_id": 5,
+    "available_copies": 32
+  },
+  {
+    "title": "Birinci Dünya Savaşı",
+    "isbn": "9789750509987",
+    "author_name": "Martin Gilbert",
+    "category_id": 5,
+    "available_copies": 40
+  }
+]

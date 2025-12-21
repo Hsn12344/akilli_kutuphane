@@ -1,25 +1,19 @@
-from models import db, Book, Author, Category
+from repositories.book_repository import BookRepository
+from models import Book
 
 def list_books():
-    return Book.query.all()
+    return BookRepository.get_all()
 
-def search_books(title, category):
-    query = Book.query
-    if title:
-        query = query.filter(Book.title.ilike(f"%{title}%"))
-    if category:
-        query = query.join(Book.category).filter(Category.name.ilike(f"%{category}%"))
-    return query.all()
+
+def search_books(title=None, author=None, category=None):
+    return BookRepository.search(title, author, category)
+
 
 def add_book_service(title, isbn, author_name, category_id, copies):
     if not all([title, isbn, author_name, category_id]):
         return None, "Başlık, ISBN, yazar adı ve kategori zorunludur."
 
-    author = Author.query.filter_by(name=author_name).first()
-    if not author:
-        author = Author(name=author_name)
-        db.session.add(author)
-        db.session.commit()
+    author = BookRepository.get_or_create_author(author_name)
 
     book = Book(
         title=title,
@@ -29,13 +23,12 @@ def add_book_service(title, isbn, author_name, category_id, copies):
         available_copies=copies
     )
 
-    db.session.add(book)
-    db.session.commit()
+    BookRepository.save(book)
     return book, None
 
 
 def update_book_service(book_id, data):
-    book = Book.query.get(book_id)
+    book = BookRepository.get_by_id(book_id)
     if not book:
         return None, "Kitap bulunamadı."
 
@@ -44,15 +37,15 @@ def update_book_service(book_id, data):
     book.author_id = data.get("author_id", book.author_id)
     book.category_id = data.get("category_id", book.category_id)
     book.available_copies = data.get("available_copies", book.available_copies)
-    db.session.commit()
+
+    BookRepository.save(book)
     return book, None
 
 
 def delete_book_service(book_id):
-    book = Book.query.get(book_id)
+    book = BookRepository.get_by_id(book_id)
     if not book:
         return False, "Kitap bulunamadı."
 
-    db.session.delete(book)
-    db.session.commit()
+    BookRepository.delete(book)
     return True, None

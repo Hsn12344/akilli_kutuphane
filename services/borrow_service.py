@@ -1,23 +1,19 @@
-from models import db, Borrow, Book, Fine
 from datetime import datetime, timedelta
+from repositories.borrow_repository import BorrowRepository
+from models import Borrow, Fine
 from utils.mail_service import send_due_reminder
 
 DAILY_FINE = 10.0
 
 def borrow_book_service(user_id, book_id):
-    book = Book.query.get(book_id)
+    book = BorrowRepository.get_book(book_id)
 
     if not book:
         return None, "Kitap bulunamadı."
     if book.available_copies < 1:
         return None, "Kitap stokta yok."
 
-    existing = Borrow.query.filter_by(
-        user_id=user_id,
-        book_id=book_id,
-        return_date=None
-    ).first()
-
+    existing = BorrowRepository.get_active_borrow(user_id, book_id)
     if existing:
         return None, "Bu kitabı zaten ödünç almışsınız."
 
@@ -31,8 +27,7 @@ def borrow_book_service(user_id, book_id):
     )
 
     book.available_copies -= 1
-    db.session.add(borrow)
-    db.session.commit()
+    BorrowRepository.save(borrow)
 
     try:
         send_due_reminder(
@@ -46,7 +41,7 @@ def borrow_book_service(user_id, book_id):
     return borrow, None
 
 def return_book_service(user_id, borrow_id):
-    borrow = Borrow.query.get(borrow_id)
+    borrow = BorrowRepository.get_borrow_by_id(borrow_id)
 
     if not borrow:
         return None, "Ödünç kaydı bulunamadı."
@@ -56,11 +51,10 @@ def return_book_service(user_id, borrow_id):
         return None, "Kitap zaten iade edilmiş."
 
     borrow.return_date = datetime.utcnow()
-
     update_daily_fines()
 
     borrow.book.available_copies += 1
-    db.session.commit()
+    BorrowRepository.save(borrow)
 
     return borrow, None
 
@@ -68,29 +62,20 @@ def list_borrows(user_id, role):
     update_daily_fines()
 
     if role == "admin":
-        return Borrow.query.all()
+        return BorrowRepository.get_all_borrows()
 
-    return Borrow.query.filter_by(user_id=user_id).all()
+    return BorrowRepository.get_user_borrows(user_id)
 
 def list_fines(role):
     if role != "admin":
         return None
 
     update_daily_fines()
-    return Fine.query.all()
+    return BorrowRepository.get_all_fines()
 
 def list_user_fines(user_id):
     update_daily_fines()
-
-    return (
-        Fine.query
-        .join(Borrow)
-        .filter(
-            Borrow.user_id == user_id,
-            Fine.is_paid == False
-        )
-        .all()
-    )
+    return BorrowRepository.get_user_unpaid_fines(user_id)
 
 def pay_fine_service(user_id, fine_id):
     fine = Fine.query.get(fine_id)
@@ -104,14 +89,13 @@ def pay_fine_service(user_id, fine_id):
 
     fine.is_paid = True
     fine.paid_at = datetime.utcnow()
-    db.session.commit()
+    BorrowRepository.save_fine(fine)
 
     return True, "Ceza başarıyla ödendi."
 
 def update_daily_fines():
     today = datetime.utcnow().date()
-
-    borrows = Borrow.query.filter_by(return_date=None).all()
+    borrows = BorrowRepository.get_all_active_borrows()
 
     for borrow in borrows:
         due = borrow.due_date.date()
@@ -120,8 +104,7 @@ def update_daily_fines():
             days_late = (today - due).days
             expected_amount = days_late * DAILY_FINE
 
-            with db.session.no_autoflush:
-                fine = Fine.query.filter_by(borrow_id=borrow.id).first()
+            fine = BorrowRepository.get_fine_by_borrow(borrow.id)
 
             if fine:
                 fine.amount = expected_amount
@@ -133,6 +116,5 @@ def update_daily_fines():
                     amount=expected_amount,
                     is_paid=False
                 )
-                db.session.add(fine)
 
-    db.session.commit()
+            BorrowRepository.save_fine(fine)

@@ -3,13 +3,36 @@
 {% block page_title %}Kitaplar{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h5>Kitap Listesi</h5>
-    <input type="text"
-           class="form-control form-control-sm w-50"
-           id="userBookSearch"
-           placeholder="Kitap ara..."
-           oninput="fetchBooks(this.value)">
+<div class="mb-3">
+    <h5 class="mb-2">Kitap Listesi</h5>
+
+    <div class="row g-2">
+        <div class="col-md-4">
+            <input type="text"
+                   class="form-control form-control-sm"
+                   id="searchTitle"
+                   placeholder="Kitap adı">
+        </div>
+
+        <div class="col-md-4">
+            <input type="text"
+                   class="form-control form-control-sm"
+                   id="searchAuthor"
+                   placeholder="Yazar adı">
+        </div>
+
+        <div class="col-md-4">
+            <select class="form-select form-select-sm"
+                    id="searchCategory">
+                <option value="">Tüm Kategoriler</option>
+                <option value="Klasik">Klasik Roman</option>
+                <option value="Macera">Macera</option>
+                <option value="Bilim Kurgu">Bilim Kurgu</option>
+                <option value="Psikoloji">Psikoloji</option>
+                <option value="Tarih">Tarih</option>
+            </select>
+        </div>
+    </div>
 </div>
 
 <div class="table-responsive card shadow-sm">

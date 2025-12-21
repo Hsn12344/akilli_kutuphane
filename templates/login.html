@@ -5,12 +5,18 @@
 {% block content %}
 <form onsubmit="event.preventDefault(); login();">
     <div class="mb-3">
-        <label for="loginEmail" class="form-label">Email</label>
+        <label class="form-label">
+            <i class="bi bi-envelope me-1"></i>
+            Email
+        </label>
         <input id="loginEmail" type="email" class="form-control" placeholder="ornek@mail.com" required>
     </div>
 
     <div class="mb-3">
-        <label for="loginPassword" class="form-label">Şifre</label>
+        <label class="form-label">
+            <i class="bi bi-lock me-1"></i>
+            Şifre
+        </label>
         <input id="loginPassword" type="password" class="form-control" placeholder="Şifreniz" required>
     </div>
 

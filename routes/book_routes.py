@@ -4,23 +4,25 @@ from services.book_service import *
 
 book_bp = Blueprint('book_bp', __name__)
 
-# GET /books → KİTAP LİSTELE
 @book_bp.route('/', methods=['GET'])
 def get_books():
     books = list_books()
     return jsonify([b.to_dict() for b in books]), 200
 
-
-# GET /books/search → ARAMA
 @book_bp.route('/search', methods=['GET'])
 def search():
-    title = request.args.get('title', '')
-    category = request.args.get('category', '')
-    books = search_books(title, category)
+    title = request.args.get('title')
+    category = request.args.get('category')
+    author = request.args.get('author')
+
+    books = search_books(
+        title=title,
+        category=category,
+        author=author
+    )
+
     return jsonify([b.to_dict() for b in books]), 200
 
-
-# POST /books → KİTAP EKLE
 @book_bp.route('/', methods=['POST'])
 @admin_required
 def add_book():

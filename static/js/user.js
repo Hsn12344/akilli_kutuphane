@@ -1,21 +1,27 @@
 window.addEventListener("DOMContentLoaded", () => {
     if (!requireAuth(["user", "admin"])) return;
 
+    bindDeleteAccount();
+
     const path = window.location.pathname;
 
     if (path === "/user" || path === "/user/") {
         loadUserDashboard();
     } else if (path === "/user/books") {
         fetchBooks();
+        document.getElementById("searchTitle")
+            ?.addEventListener("input", fetchBooks);
+
+        document.getElementById("searchAuthor")
+            ?.addEventListener("input", fetchBooks);
+
+        document.getElementById("searchCategory")
+            ?.addEventListener("change", fetchBooks);
     } else if (path === "/user/borrows") {
         fetchBorrowed();
     }
 });
 
-
-// --------------------------------------------
-// DASHBOARD
-// --------------------------------------------
 async function loadUserDashboard() {
     const token = getToken();
     if (!token) return;
@@ -48,15 +54,21 @@ async function loadUserDashboard() {
     }
 }
 
-
-// ---------------------------------------------------
-// KİTAPLARI GETİR
-// ---------------------------------------------------
-async function fetchBooks(search = "") {
+async function fetchBooks() {
     try {
-        let url = `${API_URL}/books`;
-        if (search) {
-            url = `${API_URL}/books/search?title=${encodeURIComponent(search)}`;
+        const title = document.getElementById("searchTitle")?.value;
+        const author = document.getElementById("searchAuthor")?.value;
+        const category = document.getElementById("searchCategory")?.value;
+
+        let url = `${API_URL}/books/search`;
+        const params = new URLSearchParams();
+
+        if (title) params.append("title", title);
+        if (author) params.append("author", author);
+        if (category) params.append("category", category);
+
+        if ([...params].length > 0) {
+            url += `?${params.toString()}`;
         }
 
         const res = await fetch(url);
@@ -66,7 +78,6 @@ async function fetchBooks(search = "") {
         const msgEl = document.getElementById("booksMessage");
 
         if (!tbody) return;
-
         tbody.innerHTML = "";
 
         if (!Array.isArray(books) || books.length === 0) {
@@ -87,7 +98,10 @@ async function fetchBooks(search = "") {
                 <td>${book.available_copies}</td>
                 <td>
                     ${book.available_copies > 0
-                        ? `<button class="btn btn-sm btn-primary" onclick="borrowBook(${book.id})">Ödünç Al</button>`
+                        ? `<button class="btn btn-sm btn-primary"
+                                   onclick="borrowBook(${book.id})">
+                               Ödünç Al
+                           </button>`
                         : '<span class="badge bg-secondary">Stokta Yok</span>'}
                 </td>
             `;
@@ -96,14 +110,10 @@ async function fetchBooks(search = "") {
         });
 
     } catch (err) {
-        console.error(err);
+        console.error("Kitaplar yüklenemedi:", err);
     }
 }
 
-
-// ---------------------------------------------------
-// ÖDÜNÇ AL
-// ---------------------------------------------------
 async function borrowBook(bookId) {
     const token = getToken();
     if (!token) {
@@ -208,3 +218,51 @@ async function returnBook(borrowId) {
     }
 }
 
+// ---------------------------------------------------
+// HESABI SİL
+// ---------------------------------------------------
+function bindDeleteAccount() {
+    const deleteBtn = document.getElementById("deleteAccountBtn");
+    if (!deleteBtn) return;
+
+    deleteBtn.onclick = async () => {
+        deleteBtn.disabled = true;
+
+        const ok = confirm(
+            "Bu işlem GERİ ALINAMAZ!\nHesabınızı kalıcı olarak silmek istediğinize emin misiniz?"
+        );
+        if (!ok) {
+            deleteBtn.disabled = false;
+            return;
+        }
+
+        const token = getToken();
+        if (!token) {
+            window.location.replace("/login");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/auth/delete-account`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            const data = await res.json();
+            alert(data.message);
+
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("role");
+            localStorage.removeItem("email");
+
+            window.location.replace("/login");
+
+        } catch (err) {
+            console.error(err);
+            alert("Sunucuya bağlanırken hata oluştu.");
+            deleteBtn.disabled = false;
+        }
+    };
+}
