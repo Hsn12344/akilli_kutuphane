@@ -54,11 +54,17 @@ Asenkron (thread) mail gönderimi
 Proje katmanlı mimari (Layered Architecture) ile tasarlanmıştır:
 
 routes        → API & page endpoint’leri
+
 services      → İş mantığı (business logic)
+
 repositories  → Veritabanı erişimi
+
 models        → ORM (SQLAlchemy)
+
 utils         → Decorator, mail, error handling
+
 templates     → Jinja2 frontend
+
 static        → JS / CSS / assets
 
 
@@ -73,16 +79,27 @@ Genişletilebilirliği sağlar
 
 
 🛠️ Kullanılan Teknolojiler
-Katman	Teknoloji
-Backend	Python, Flask
-ORM	SQLAlchemy
-Auth	JWT (flask-jwt-extended)
-Database	MySQL
-Migration	Flask-Migrate
-Mail	Flask-Mail
-Frontend	Jinja2, Bootstrap 5, JavaScript
-Security	Role-based access control
-Architecture	Layered Architecture
+
+Katman	      ->  Teknoloji
+
+Backend	      ->  Python, Flask
+
+ORM	          ->  SQLAlchemy
+
+Auth	        ->  JWT (flask-jwt-extended)
+
+Database	    ->  MySQL
+
+Migration	    ->  Flask-Migrate
+
+Mail	        ->  Flask-Mail
+
+Frontend	    ->  Jinja2, Bootstrap 5, JavaScript
+
+Security	    ->  Role-based access control
+
+Architecture  ->  Layered Architecture
+
 
 
 🗄️Veritabanı Modelleri
