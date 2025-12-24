@@ -13,24 +13,30 @@ function getEmail() {
     return localStorage.getItem("email");
 }
 
-// Sayfa bazlı rol kontrolü
 function requireAuth(allowedRoles = null) {
     const token = getToken();
     const role = getRole();
+    const path = window.location.pathname;
+
+    if (path === "/login" || path === "/register" || path === "/verify") {
+        return true;
+    }
 
     if (!token || isTokenExpired(token)) {
         localStorage.clear();
-        window.location.href = "/login";
+        window.location.replace("/login");
         return false;
     }
 
     if (allowedRoles && !allowedRoles.includes(role)) {
-        if (role === "admin") window.location.href = "/admin";
-        else window.location.href = "/user";
+        localStorage.clear();
+        window.location.replace("/login");
         return false;
     }
+
     return true;
 }
+
 
 function logout() {
     localStorage.clear();

@@ -2,6 +2,8 @@ from flask_jwt_extended import create_access_token
 from repositories.user_repository import UserRepository
 from models import User
 from utils.mail_service import send_welcome_email
+from utils.code_generator import generate_verification_code
+from utils.mail_service import send_verification_email
 
 
 def register_user(name, email, password, role="user"):
@@ -11,19 +13,32 @@ def register_user(name, email, password, role="user"):
     if UserRepository.get_by_email(email):
         return None, "Bu e-posta zaten kayıtlı."
 
-    user = User(name=name, email=email, role=role)
-    user.set_password(password)
+    code = generate_verification_code()
 
+    user = User(
+        name=name,
+        email=email,
+        role=role,
+        is_verified=False,
+        verification_code=code
+    )
+    user.set_password(password)
     UserRepository.save(user)
 
-    send_welcome_email(email, name)
-    return user, None
+    send_verification_email(email, code)
 
+    return user, "Doğrulama kodu e-posta adresinize gönderildi."
 
 def login_user(email, password):
     user = UserRepository.get_by_email(email)
 
-    if not user or not user.check_password(password):
+    if not user:
+        return None, None, "E-posta veya şifre hatalı."
+
+    if not user.is_verified:
+        return None, None, "Hesap doğrulanmamış. Lütfen e-postanı kontrol et."
+
+    if not user.check_password(password):
         return None, None, "E-posta veya şifre hatalı."
 
     token = create_access_token(
@@ -32,6 +47,7 @@ def login_user(email, password):
     )
 
     return token, user, None
+
 
 
 def create_admin_direct(email, password):

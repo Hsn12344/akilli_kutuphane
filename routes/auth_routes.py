@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from repositories.user_repository import UserRepository
 from services.auth_service import register_user, login_user, create_admin_direct
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from services.auth_service import delete_my_account
@@ -7,19 +8,19 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
 
-    user, err = register_user(
+    user, msg = register_user(
         data.get("name"),
         data.get("email"),
         data.get("password"),
         data.get("role", "user")
     )
 
-    if err:
-        return jsonify({"message": err}), 400
+    if not user:
+        return jsonify({"message": msg}), 400
 
-    return jsonify({"message": "Kullanıcı başarıyla kaydedildi."}), 201
+    return jsonify({"message": msg}), 201
 
 
 @auth_bp.route("/login", methods=["POST"])
@@ -61,3 +62,22 @@ def delete_account():
         return jsonify({"message": message}), 400
 
     return jsonify({"message": message}), 200
+
+@auth_bp.route("/verify", methods=["POST"])
+def verify_account():
+    data = request.get_json()
+    email = data.get("email")
+    code = data.get("code")
+
+    user = UserRepository.get_by_email(email)
+    if not user:
+        return jsonify({"message": "Kullanıcı bulunamadı."}), 404
+
+    if user.verification_code != code:
+        return jsonify({"message": "Doğrulama kodu hatalı."}), 400
+
+    user.is_verified = True
+    user.verification_code = None
+    UserRepository.save(user)
+
+    return jsonify({"message": "Hesap başarıyla doğrulandı."}), 200

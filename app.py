@@ -41,6 +41,10 @@ def login_page():
 def register_page():
     return render_template("register.html")
 
+@app.route("/verify")
+def verify_page():
+    return render_template("verify.html")
+
 @app.route("/user")
 def user_dashboard():
     return render_template("user_dashboard.html")

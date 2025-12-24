@@ -238,6 +238,7 @@ function bindDeleteAccount() {
 
         const token = getToken();
         if (!token) {
+            localStorage.clear();
             window.location.replace("/login");
             return;
         }
@@ -251,11 +252,16 @@ function bindDeleteAccount() {
             });
 
             const data = await res.json();
+
+            if (!res.ok) {
+                alert(data.message || "Hesap silinemedi.");
+                deleteBtn.disabled = false;
+                return;
+            }
+
             alert(data.message);
 
-            localStorage.removeItem("access_token");
-            localStorage.removeItem("role");
-            localStorage.removeItem("email");
+            localStorage.clear();
 
             window.location.replace("/login");
 
@@ -266,3 +272,4 @@ function bindDeleteAccount() {
         }
     };
 }
+

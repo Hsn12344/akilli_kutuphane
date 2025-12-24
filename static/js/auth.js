@@ -47,34 +47,36 @@ async function login() {
 }
 
 async function register() {
-    const nameEl = document.getElementById("registerName");
-    const emailEl = document.getElementById("registerEmail");
-    const passEl = document.getElementById("registerPassword");
-    const msgEl = document.getElementById("registerMessage");
+  const nameEl = document.getElementById("registerName");
+  const emailEl = document.getElementById("registerEmail");
+  const passEl = document.getElementById("registerPassword");
+  const msgEl = document.getElementById("registerMessage");
 
-    if (!nameEl || !emailEl || !passEl) return;
+  const name = (nameEl?.value || "").trim();
+  const email = (emailEl?.value || "").trim();
+  const password = (passEl?.value || "").trim();
 
-    const name = nameEl.value;
-    const email = emailEl.value;
-    const password = passEl.value;
+  try {
+    const res = await fetch(`${API_URL}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password })
+    });
 
-    try {
-        const res = await fetch(`${API_URL}/auth/register`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ name, email, password })
-        });
+    let data = {};
+    try { data = await res.json(); } catch (e) {}
 
-        const data = await res.json();
-        if (msgEl) msgEl.textContent = data.message || data.error || "";
+    console.log("REGISTER status:", res.status, "data:", data);
 
-        if (res.ok) {
-            // Kayıt başarılıysa login sayfasına yönlendir
-            setTimeout(() => {
-                window.location.href = "/login";
-            }, 800);
-        }
-    } catch (err) {
-        if (msgEl) msgEl.textContent = "Sunucu hatası.";
+    if (msgEl) msgEl.textContent = data.message || data.error || "";
+
+    if (res.status === 201 || res.status === 200) {
+      localStorage.setItem("verify_email", email);
+      window.location.replace("/verify");
     }
+
+  } catch (err) {
+    console.error(err);
+    if (msgEl) msgEl.textContent = "Sunucu hatası.";
+  }
 }

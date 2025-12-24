@@ -61,3 +61,17 @@ Uygulanan gecikme cezası:
 {delay_days} gün × 10 TL = {fine_amount} TL
 """
     send_email(subject, [user_email], body)
+
+def send_verification_email(user_email, code):
+    subject = "📩 Hesap Doğrulama Kodu"
+    body = f"""
+Merhaba,
+
+Akıllı Kütüphane hesabınızı aktifleştirmek için doğrulama kodunuz:
+
+🔐 {code}
+
+Bu kodu paylaşmayınız.
+"""
+    send_email(subject, [user_email], body)
+
