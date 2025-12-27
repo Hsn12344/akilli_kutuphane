@@ -8,7 +8,7 @@ load_dotenv()  # .env dosyasını oku
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY")
     JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=5)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
