@@ -382,3 +382,84 @@ async function loadUsers() {
         console.error("Kullanıcı listesi alınamadı:", err);
     }
 }
+
+function fetchBooksAdmin() {
+    fetch("/books")
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById("adminBooksTable");
+            tbody.innerHTML = "";
+
+            data.forEach(book => {
+                const tr = document.createElement("tr");
+
+                tr.innerHTML = `
+                    <td>${book.id}</td>
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.category_id}</td>
+                    <td>${book.available_copies}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning"
+                            onclick="openEditBookModal(
+                                ${book.id},
+                                '${book.title}',
+                                '${book.isbn}',
+                                '${book.category_id}',
+                                ${book.available_copies}
+                            )">
+                            Düzenle
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        });
+}
+
+function openEditBookModal(id, title, isbn, category_id, stock) {
+    document.getElementById("editBookId").value = id;
+    document.getElementById("editTitle").value = title;
+    document.getElementById("editIsbn").value = isbn;
+    document.getElementById("editCategory").value = category_id;
+    document.getElementById("editStock").value = stock;
+
+    const modal = new bootstrap.Modal(document.getElementById("editBookModal"));
+    modal.show();
+}
+
+async function updateBook() {
+    const id = document.getElementById("editBookId").value;
+
+    const data = {
+        title: document.getElementById("editTitle").value,
+        isbn: document.getElementById("editIsbn").value,
+        category_id: parseInt(document.getElementById("editCategory").value),
+        available_copies: parseInt(document.getElementById("editStock").value)
+    };
+
+    try {
+        const res = await fetch(`/books/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (!res.ok) {
+            alert(result.error || "Güncelleme başarısız");
+            return;
+        }
+
+        alert("Kitap güncellendi");
+        location.reload();
+
+    } catch (err) {
+        console.error(err);
+        alert("Sunucu hatası");
+    }
+}
