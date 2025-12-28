@@ -8,6 +8,8 @@ class User(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
+    delete_code = db.Column(db.String(6), nullable=True)
+    delete_code_expires = db.Column(db.DateTime, nullable=True)
     role = db.Column(db.String(10), default="user")
     is_verified = db.Column(db.Boolean, default=False)
     verification_code = db.Column(db.String(6), nullable=True)

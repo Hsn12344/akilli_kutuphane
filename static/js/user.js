@@ -218,58 +218,53 @@ async function returnBook(borrowId) {
     }
 }
 
-// ---------------------------------------------------
-// HESABI SİL
-// ---------------------------------------------------
-function bindDeleteAccount() {
-    const deleteBtn = document.getElementById("deleteAccountBtn");
-    if (!deleteBtn) return;
-
-    deleteBtn.onclick = async () => {
-        deleteBtn.disabled = true;
-
-        const ok = confirm(
-            "Bu işlem GERİ ALINAMAZ!\nHesabınızı kalıcı olarak silmek istediğinize emin misiniz?"
-        );
-        if (!ok) {
-            deleteBtn.disabled = false;
-            return;
+function requestDeleteAccount() {
+    fetch("/auth/request-delete", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${getToken()}`
         }
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        new bootstrap.Modal(document.getElementById("deleteAccountModal")).show();
+    })
+    .catch(() => alert("Sunucu hatası"));
+}
 
-        const token = getToken();
-        if (!token) {
+function confirmDeleteAccount() {
+    const code = document.getElementById("deleteCodeInput").value;
+
+    if (!code) {
+        alert("Lütfen doğrulama kodunu girin.");
+        return;
+    }
+
+    fetch("/auth/confirm-delete", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${getToken()}`
+        },
+        body: JSON.stringify({ code })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.message.includes("başarı")) {
+            alert("Hesabınız silindi.");
             localStorage.clear();
-            window.location.replace("/login");
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_URL}/auth/delete-account`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                alert(data.message || "Hesap silinemedi.");
-                deleteBtn.disabled = false;
-                return;
-            }
-
+            window.location.href = "/login";
+        } else {
             alert(data.message);
-
-            localStorage.clear();
-
-            window.location.replace("/login");
-
-        } catch (err) {
-            console.error(err);
-            alert("Sunucuya bağlanırken hata oluştu.");
-            deleteBtn.disabled = false;
         }
-    };
+    });
+}
+
+function bindDeleteAccount() {
+    const btn = document.getElementById("deleteAccountBtn");
+    if (!btn) return;
+
+    btn.addEventListener("click", requestDeleteAccount);
 }
 

@@ -75,3 +75,17 @@ Bu kodu paylaşmayınız.
 """
     send_email(subject, [user_email], body)
 
+def send_delete_account_email(user_email, code):
+    subject = "Hesap Silme Onayı"
+    body = f"""
+Merhaba,
+
+Hesabınızı silmek için aşağıdaki doğrulama kodunu kullanın:
+
+🔐 {code}
+
+Eğer bu işlemi siz başlatmadıysanız, bu e-postayı dikkate almayınız.
+
+Bu işlem geri alınamaz.
+"""
+    send_email(subject, [user_email], body)

@@ -1,9 +1,11 @@
 from flask_jwt_extended import create_access_token
 from repositories.user_repository import UserRepository
 from models import User
-from utils.mail_service import send_welcome_email
+from utils.mail_service import send_welcome_email, send_delete_account_email
+from datetime import datetime, timedelta
 from utils.code_generator import generate_verification_code
 from utils.mail_service import send_verification_email
+import random
 
 
 def register_user(name, email, password, role="user"):
@@ -63,14 +65,33 @@ def create_admin_direct(email, password):
     UserRepository.save(admin)
     return admin, None
 
-def delete_my_account(current_user_id):
-    user = UserRepository.get_by_id(current_user_id)
+def request_delete_account(user_id):
+    user = UserRepository.get_by_id(user_id)
+    if not user:
+        return False, "Kullanıcı bulunamadı."
+
+    code = str(random.randint(100000, 999999))
+    user.delete_code = code
+    user.delete_code_expires = datetime.utcnow() + timedelta(minutes=10)
+
+    UserRepository.save(user)
+
+    send_delete_account_email(user.email, f"Hesap silme kodunuz: {code}")
+
+    return True, "Doğrulama kodu e-posta adresinize gönderildi."
+
+
+def confirm_delete_account(user_id, code):
+    user = UserRepository.get_by_id(user_id)
 
     if not user:
         return False, "Kullanıcı bulunamadı."
 
-    if user.role == "admin":
-        return False, "Admin hesabı bu yöntemle silinemez."
+    if user.delete_code != code:
+        return False, "Kod hatalı."
+
+    if datetime.utcnow() > user.delete_code_expires:
+        return False, "Kodun süresi dolmuş."
 
     UserRepository.delete(user)
-    return True, "Hesabınız başarıyla silindi."
+    return True, "Hesap başarıyla silindi."

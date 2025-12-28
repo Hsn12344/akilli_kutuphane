@@ -82,13 +82,19 @@ def pay_fine_service(user_id, fine_id):
 
     if not fine:
         return False, "Ceza bulunamadı."
+
     if fine.borrow.user_id != user_id:
         return False, "Bu ceza size ait değil."
+
+    if fine.borrow.return_date is None:
+        return False, "Kitap iade edilmeden ödeme yapılamaz."
+
     if fine.is_paid:
         return False, "Bu ceza zaten ödenmiş."
 
     fine.is_paid = True
     fine.paid_at = datetime.utcnow()
+
     BorrowRepository.save_fine(fine)
 
     return True, "Ceza başarıyla ödendi."
